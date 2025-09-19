@@ -6,15 +6,15 @@ const prisma = new PrismaClient();
 const router = Router();
 
 router.post("/", authenticate, requireRole("SHIPPER"), async(req: AuthRequest, res: Response) => {
-    const {shipperId, source, destination, weight, type} = req.body;
+    const {shipperId, sourceLocation, destinationLocation, weight, typeOfGoods} = req.body;
     
     const load = await prisma.load.create ({
         data: {
             shipperId: shipperId,
-            sourceLocation: source,
-            destinationLocation: destination,
+            sourceLocation: sourceLocation,
+            destinationLocation: destinationLocation,
             weight: weight,
-            typeOfGoods: type,
+            typeOfGoods: typeOfGoods,
         } 
         
     });

@@ -15,14 +15,14 @@ const auth_1 = require("../middlewares/auth");
 const prisma = new client_1.PrismaClient();
 const router = (0, express_1.Router)();
 router.post("/", auth_1.authenticate, (0, auth_1.requireRole)("SHIPPER"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { shipperId, source, destination, weight, type } = req.body;
+    const { shipperId, sourceLocation, destinationLocation, weight, typeOfGoods } = req.body;
     const load = yield prisma.load.create({
         data: {
             shipperId: shipperId,
-            sourceLocation: source,
-            destinationLocation: destination,
+            sourceLocation: sourceLocation,
+            destinationLocation: destinationLocation,
             weight: weight,
-            typeOfGoods: type,
+            typeOfGoods: typeOfGoods,
         }
     });
     if (!load) {
