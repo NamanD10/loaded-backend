@@ -40,7 +40,8 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
     const token = jsonwebtoken_1.default.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET || "SUPER_SECRET_KEY", { expiresIn: "7d" });
     res.status(201).json({
         message: "User created successfully",
-        token
+        token,
+        user
     });
 }));
 // Login
@@ -57,7 +58,8 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const token = jsonwebtoken_1.default.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET || "SUPER_SECRET_KEY", { expiresIn: "7d" });
     res.status(201).json({
         message: "User logged in successfully",
-        token
+        token,
+        user
     });
 }));
 exports.default = router;
