@@ -35,6 +35,47 @@ router.post("/", auth_1.authenticate, (0, auth_1.requireRole)("SHIPPER"), (req, 
         load
     });
 }));
+router.get("/", auth_1.authenticate, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { status, source, destination } = req.query;
+        const user = req.user;
+        let where = {};
+        // Filtering by status if provided
+        if (status) {
+            where.status = String(status).toUpperCase();
+        }
+        // Filtering by location if provided
+        if (source) {
+            where.sourceLocation = { contains: String(source), mode: "insensitive" };
+        }
+        if (destination) {
+            where.destinationLocation = { contains: String(destination), mode: "insensitive" };
+        }
+        // Role-based logic
+        if (user.role === "SHIPPER") {
+            // Show only this shipper's loads
+            where.shipperId = user.userId;
+        }
+        else if (user.role === "TRANSPORTER") {
+            // Show all open loads by default if no filter applied
+            if (!status)
+                where.status = "OPEN";
+        }
+        const loads = yield prisma.load.findMany({
+            where,
+            include: {
+                shipper: { select: { id: true, name: true } },
+                bids: true
+            },
+            orderBy: { createdAt: "desc" }
+        });
+        res.json(loads);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Something went wrong" });
+    }
+}));
 router.get("/:id", auth_1.authenticate, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loadId = parseInt(req.params.id);
     const load = yield prisma.load.findUnique({
