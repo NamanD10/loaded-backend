@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int          @id @default(autoincrement())
+  name       String
+  email      String       @unique
+  password   String
+  role       Role
+  loads      Load[]       @relation("ShipperLoads")
+  bids       Bid[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Assignment Assignment[]
+}
+
+model Load {
+  id                  Int          @id @default(autoincrement())
+  shipperId           Int
+  shipper             User        @relation("ShipperLoads", fields: [shipperId], references: [id])
+  sourceLocation      String
+  destinationLocation String
+  weight              Float
+  typeOfGoods         String
+  status              LoadStatus  @default(OPEN)
+  bids                Bid[]
+  assignment          Assignment?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+}
+
+model Bid {
+  id            Int       @id @default(autoincrement())
+  loadId        Int
+  load          Load         @relation(fields: [loadId], references: [id])
+  transporterId Int
+  transporter   User         @relation(fields: [transporterId], references: [id])
+  amount        Float
+  status        BidStatus    @default(PENDING)
+  createdAt     DateTime     @default(now())
+  Assignment    Assignment[]
+}
+
+model Assignment {
+  id            Int           @id @default(autoincrement())
+  loadId        Int           @unique
+  load          Load             @relation(fields: [loadId], references: [id])
+  bidId         Int
+  bid           Bid              @relation(fields: [bidId], references: [id])
+  transporterId Int
+  transporter   User             @relation(fields: [transporterId], references: [id])
+  agreedAmount  Float
+  status        AssignmentStatus @default(ASSIGNED)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+enum Role {
+  SHIPPER
+  TRANSPORTER
+}
+
+enum LoadStatus {
+  OPEN
+  ASSIGNED
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+enum BidStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum AssignmentStatus {
+  ASSIGNED
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
