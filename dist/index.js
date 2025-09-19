@@ -17,4 +17,7 @@ app.use("/loads", loads_1.default);
 app.use("/bids", bids_1.default);
 app.use("/assignments", assignments_1.default);
 const PORT = process.env.PORT;
+app.get("/", () => {
+    console.log("Hello from loaded");
+});
 app.listen(PORT, () => { console.log(`App listening on PORT ${PORT}`); });

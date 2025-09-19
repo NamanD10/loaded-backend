@@ -17,6 +17,10 @@ app.use("/assignments", assignmentRouter);
 
 const PORT = process.env.PORT;
 
+app.get("/", () => {
+    console.log("Hello from loaded");
+});
+
 app.listen(PORT,
     () => {console.log(`App listening on PORT ${PORT}`)}
 );
